@@ -1,39 +1,52 @@
 import { Page, Locator } from 'playwright/test';
-import { BasePage } from '../pages/basepage'
+import { BasePage } from '../pages/basepage';
 
-export class HomePage extends BasePage{
-
-    public hotelDescription = this.page.locator('.hotel-description');
-    public mainImage = this.page.getByRole('img', { name: 'Hotel logoUrl' });
-    // public x = this.page.getByLabel()
-    public roomOptions = this.page.locator('.hotel-room-info');
-    public roomOptions2 = this.page.locator('hotel-room-info');
-
+export class HomePage extends BasePage {
     constructor(page: Page) {
-        super(page)
+        super(page);
     }
 
-    async getEntryCount(): Promise<number> {
-        return await this.roomOptions.count();
-    }
-    
-    async isImagePresentInEntry(index: number): Promise<boolean> {
-        const image = this.roomOptions.nth(index).locator('img');
-        return await image.isVisible();
-    }
-    
-    async isTextPresentInEntry(index: number): Promise<boolean> {
-        const text = this.roomOptions.nth(index).locator('p');
-        const textContent = await text.textContent();
-        return textContent !== null && textContent.trim().length > 0;
+    public hotelDescription: Locator = this.page.locator('.hotel-description');
+    public mainImage: Locator = this.page.getByRole('img', { name: 'Hotel logoUrl' });
+    public roomOptions: Locator = this.page.locator('.hotel-room-info');
+    public contactFormName: Locator = this.page.getByTestId('ContactName');
+    public contactFormEmail: Locator = this.page.getByTestId('ContactEmail');
+    public contactFormPhone: Locator = this.page.getByTestId('ContactPhone');
+    public contactFormSubject: Locator = this.page.getByTestId('ContactSubject');
+    public contactFormDescription: Locator = this.page.getByTestId('ContactDescription');
+    public contactFormSubmitButton: Locator = this.page.getByRole('button', { name: 'Submit' })
+    public contactFormErrorBox: Locator = this.page.locator('.contact').locator('.alert');
+
+
+    async getAllRoomOptions() {
+        const allRoomOptions = await this.roomOptions;
+        return allRoomOptions;
     }
 
-    async verifyRoomOptionsCount(): Promise<void> {
-        // var testy = this.page.locator('.hotel-room-info');
-        // const county = testy.count();
-        // console.log(`Room options found: ${county}`);
-        // if (county !== 4) {
-        //     throw new Error(`Expected 4 room options, but found ${county}`);
-        // }
+    async getAllRoomOptionsCount(): Promise<number> {
+        await this.page.waitForSelector('.hotel-room-info', { state: 'visible' }); // Wait for the elements to become visible
+        const allRoomOptions = await this.getAllRoomOptions();
+        return await allRoomOptions.count();
+    }
+
+    async allRoomOptionsHaveImages(): Promise<boolean> {
+        await this.page.waitForSelector('.hotel-room-info', { state: 'visible' }); // Wait for the elements to become visible
+        // Wait for room options to be visible
+        const allRoomOptions = await this.getAllRoomOptions();
+        const count = await allRoomOptions.count();
+        for (let i = 0; i < count; i++) {
+            // Get the specific room option by index
+            const roomOption = allRoomOptions.nth(i);
+    
+            // Check if the image exists inside the room option
+            const hasImage = await roomOption.getByRole("img").isVisible();
+    
+            // If any room option does not have an image, return false
+            if (!hasImage) {
+                return false;
+            }
+        
+        }
+        return true;
     }
 }

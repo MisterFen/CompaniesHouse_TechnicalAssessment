@@ -14,4 +14,11 @@ test.describe('Home Page Tests', () => {
         await expect(homePage.hotelDescription).toBeVisible();
         await expect(homePage.mainImage).toBeVisible();
     });
+
+    test('Each room option has an image and info', async () => {
+        const roomOptionsCount = await homePage.getAllRoomOptionsCount();
+        await expect(roomOptionsCount).toBeGreaterThan(0); // Assert that the count is greater than 0
+        const imagesResult = await homePage.allRoomOptionsHaveImages();
+        await expect(imagesResult).toBeTruthy();
+    });
 });
