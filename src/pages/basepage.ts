@@ -11,6 +11,10 @@ export class BasePage {
     await this.page.goto('');
   }
 
+  async pressKey(key: string): Promise<void> {
+    await this.page.keyboard.press(key);
+  }
+
   async isImageLoaded(locator: Locator): Promise<boolean> {
     return await locator.evaluate((img: HTMLImageElement) => {
       const isComplete = img.complete;

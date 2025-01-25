@@ -3,10 +3,9 @@ import { defineConfig } from 'playwright/test';
 export default defineConfig({
   testDir: './src/tests',
   timeout: 10000,
-//   retries: 2,
   use: {
     baseURL: 'https://automationintesting.online/',
-    headless: false,
+    headless: true,
     screenshot: 'only-on-failure',
     video: 'retain-on-failure',
   },

@@ -9,6 +9,7 @@ export class HomePage extends BasePage {
     public hotelDescription: Locator = this.page.locator('.hotel-description');
     public mainImage: Locator = this.page.getByRole('img', { name: 'Hotel logoUrl' });
     public roomOptions: Locator = this.page.locator('.hotel-room-info');
+    //Contact Form locators
     public contactFormName: Locator = this.page.getByTestId('ContactName');
     public contactFormEmail: Locator = this.page.getByTestId('ContactEmail');
     public contactFormPhone: Locator = this.page.getByTestId('ContactPhone');
@@ -16,7 +17,8 @@ export class HomePage extends BasePage {
     public contactFormDescription: Locator = this.page.getByTestId('ContactDescription');
     public contactFormSubmitButton: Locator = this.page.getByRole('button', { name: 'Submit' })
     public contactFormErrorBox: Locator = this.page.locator('.contact').locator('.alert');
-
+    public contactFormSubmissionMessage: Locator = this.page.locator('.contact').locator('.col-sm-5').nth(0);
+    public contactFormSubmissionMessageTitle = this.contactFormSubmissionMessage.getByRole("heading");
 
     async getAllRoomOptions() {
         const allRoomOptions = await this.roomOptions;

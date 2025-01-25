@@ -109,13 +109,6 @@ test.describe('Contact Form Tests', () => {
     });
 
     test.describe('Subject Field Validation Scenarios', () => {
-      let homePage: HomePage;
-    
-      test.beforeEach(async ({ page }) => {
-        homePage = new HomePage(page);
-        await homePage.navigateTo();
-      });
-    
       test.describe('Invalid subjects', () => {
         const invalidSubjects = [
           { value: '', errors: ["Subject may not be blank", "Subject must be between 5 and 100 characters."] },
@@ -157,4 +150,101 @@ test.describe('Contact Form Tests', () => {
         }
       });
     });
+
+    test.describe('Descriptions(Message) Field Validation Scenarios', () => {
+      //TODO: Read this in from other data source, very bloaty in test file
+      const twoThousandCharString = `
+      HelloWorldHelloWorldHelloWorldHelloWorldHelloWorldHelloWorldHelloWorldHelloWorldHelloWorldHelloWorld
+      HelloWorldHelloWorldHelloWorldHelloWorldHelloWorldHelloWorldHelloWorldHelloWorldHelloWorldHelloWorld
+      HelloWorldHelloWorldHelloWorldHelloWorldHelloWorldHelloWorldHelloWorldHelloWorldHelloWorldHelloWorld
+      HelloWorldHelloWorldHelloWorldHelloWorldHelloWorldHelloWorldHelloWorldHelloWorldHelloWorldHelloWorld
+      HelloWorldHelloWorldHelloWorldHelloWorldHelloWorldHelloWorldHelloWorldHelloWorldHelloWorldHelloWorld
+      HelloWorldHelloWorldHelloWorldHelloWorldHelloWorldHelloWorldHelloWorldHelloWorldHelloWorldHelloWorld
+      HelloWorldHelloWorldHelloWorldHelloWorldHelloWorldHelloWorldHelloWorldHelloWorldHelloWorldHelloWorld
+      HelloWorldHelloWorldHelloWorldHelloWorldHelloWorldHelloWorldHelloWorldHelloWorldHelloWorldHelloWorld
+      HelloWorldHelloWorldHelloWorldHelloWorldHelloWorldHelloWorldHelloWorldHelloWorldHelloWorldHelloWorld
+      HelloWorldHelloWorldHelloWorldHelloWorldHelloWorldHelloWorldHelloWorldHelloWorldHelloWorldHelloWorld
+      HelloWorldHelloWorldHelloWorldHelloWorldHelloWorldHelloWorldHelloWorldHelloWorldHelloWorldHelloWorld
+      HelloWorldHelloWorldHelloWorldHelloWorldHelloWorldHelloWorldHelloWorldHelloWorldHelloWorldHelloWorld
+      HelloWorldHelloWorldHelloWorldHelloWorldHelloWorldHelloWorldHelloWorldHelloWorldHelloWorldHelloWorld
+      HelloWorldHelloWorldHelloWorldHelloWorldHelloWorldHelloWorldHelloWorldHelloWorldHelloWorldHelloWorld
+      HelloWorldHelloWorldHelloWorldHelloWorldHelloWorldHelloWorldHelloWorldHelloWorldHelloWorldHelloWorld
+      HelloWorldHelloWorldHelloWorldHelloWorldHelloWorldHelloWorldHelloWorldHelloWorldHelloWorldHelloWorld
+      HelloWorldHelloWorldHelloWorldHelloWorldHelloWorldHelloWorldHelloWorldHelloWorldHelloWorldHelloWorld
+      HelloWorldHelloWorldHelloWorldHelloWorldHelloWorldHelloWorldHelloWorldHelloWorldHelloWorldHelloWorld
+      HelloWorldHelloWorldHelloWorldHelloWorldHelloWorldHelloWorldHelloWorldHelloWorldHelloWorldHelloWorld
+      HelloWorldHelloWorldHelloWorldHelloWorldHelloWorldHelloWorldHelloWorldHelloWorldHelloWorldHelloWorld`.replace(/\s+/g, '')
+    
+      test.describe('Invalid descriptions', () => {
+        const invalidDescriptions = [
+          { value: '', errors: ["Message may not be blank", "Message must be between 20 and 2000 characters."] },
+          { value: 'H', errors: ["Message must be between 20 and 2000 characters."] },
+          { value: 'HelloHelloHelloHiya', errors: ["Message must be between 20 and 2000 characters."] },
+          // 2001 char string:
+          { value: twoThousandCharString+".", errors: ["Message must be between 20 and 2000 characters."] },
+        ];
+    
+        for (const { value, errors } of invalidDescriptions) {
+          test(`should show errors for description: "${value}"`, async () => {
+            const { contactFormSubmitButton, contactFormErrorBox, contactFormDescription } = homePage;
+    
+            await contactFormDescription.fill(value);
+            await contactFormSubmitButton.click();
+    
+            for (const error of errors) {
+              await expect.soft(contactFormErrorBox).toContainText(error);
+            }
+          });
+        }
+      });
+    
+      test.describe('Valid descriptions', () => {
+        const validDescriptions = [
+          { value: 'HelloWorldHelloWorld', description: 'minimum length (20 characters)' },
+          { value: twoThousandCharString, description: 'maximum length (2000 characters)' },
+        ];
+    
+        for (const { value, description } of validDescriptions) {
+          test(`should not show errors for valid subject (${description})`, async () => {
+            const { contactFormSubmitButton, contactFormErrorBox, contactFormDescription } = homePage;
+    
+            await contactFormDescription.fill(value);
+            await contactFormSubmitButton.click();
+    
+            await expect.soft(contactFormErrorBox).not.toContainText("Message may not be blank");
+            await expect.soft(contactFormErrorBox).not.toContainText("Message must be between 20 and 2000 characters.");
+          });
+        }
+      });
+    });
+
+    test('Form tabs through elements correctly', async () => {
+      await homePage.contactFormName.click();
+      expect (homePage.contactFormName).toBeFocused();
+      await homePage.pressKey('Tab');
+      expect (homePage.contactFormEmail).toBeFocused();
+      await homePage.pressKey('Tab');
+      expect (homePage.contactFormPhone).toBeFocused();
+      await homePage.pressKey('Tab');
+      expect (homePage.contactFormSubject).toBeFocused();
+      await homePage.pressKey('Tab');
+      expect (homePage.contactFormDescription).toBeFocused();
+      await homePage.pressKey('Tab');
+      expect (homePage.contactFormSubmitButton).toBeFocused();
+    });
+    
+    test('Form submits with valid info', async () => {
+      var testName = "Johnny Bravo";
+      var testSubject = "Room size query";
+
+      await homePage.contactFormName.fill(testName);
+      await homePage.contactFormEmail.fill("jbravo@rocketmail.com");
+      await homePage.contactFormPhone.fill("07777999999");
+      await homePage.contactFormSubject.fill(testSubject);
+      await homePage.contactFormDescription.fill("I was wondering if you could give me the square footage. Uh huh.");
+      await homePage.contactFormSubmitButton.click();
+
+      await expect(homePage.contactFormSubmissionMessageTitle).toContainText(testName);
+      await expect(homePage.contactFormSubmissionMessage).toContainText(testSubject);
+  });
 });
