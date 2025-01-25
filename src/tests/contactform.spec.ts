@@ -218,7 +218,7 @@ test.describe('Contact Form Tests', () => {
       });
     });
 
-    test('Form tabs through elements correctly', async () => {
+    test('Form tabs through elements correctly @accessibility', async () => {
       await homePage.contactFormName.click();
       expect (homePage.contactFormName).toBeFocused();
       await homePage.pressKey('Tab');
@@ -233,7 +233,7 @@ test.describe('Contact Form Tests', () => {
       expect (homePage.contactFormSubmitButton).toBeFocused();
     });
     
-    test('Form submits with valid info', async () => {
+    test('Form submits with valid info @critical-path', async () => {
       var testName = "Johnny Bravo";
       var testSubject = "Room size query";
 

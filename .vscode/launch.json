@@ -13,6 +13,32 @@
         },
         "console": "integratedTerminal",
         "internalConsoleOptions": "neverOpen"
+      },
+      {
+        "name": "Run Critical Path Tests",
+        "type": "node",
+        "request": "launch",
+        "program": "${workspaceFolder}/node_modules/playwright/cli.js",
+        "args": ["test", "--project=chromium", "--grep", "@critical-path"],
+        "cwd": "${workspaceFolder}",
+        "env": {
+          "PWDEBUG": "0"
+        },
+        "console": "integratedTerminal",
+        "internalConsoleOptions": "neverOpen"
+      },
+      {
+        "name": "Run Accessibility Tests",
+        "type": "node",
+        "request": "launch",
+        "program": "${workspaceFolder}/node_modules/playwright/cli.js",
+        "args": ["test", "--project=chromium", "--grep", "@accessibility"],
+        "cwd": "${workspaceFolder}",
+        "env": {
+          "PWDEBUG": "0"
+        },
+        "console": "integratedTerminal",
+        "internalConsoleOptions": "neverOpen"
       }
     ]
   }
